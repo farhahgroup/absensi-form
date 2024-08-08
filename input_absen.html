@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Absensi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 80px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .notification {
+            color: #28a745;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Input Absensi</h1>
+        <!-- Notifikasi berhasil -->
+        <div class="notification" id="notification" style="display: none;">Data berhasil disimpan!</div>
+        
+        <!-- Form Absensi -->
+        <form id="absensiForm" action="input_absensi.php" method="post">
+            <label for="pegawai_id">NIS:</label>
+            <input type="text" id="pegawai_id" name="pegawai_id" required>
+            
+            <label for="pegawai_nama">Nama Siswa/i:</label>
+            <input type="text" id="pegawai_nama" name="pegawai_nama" required>
+            
+            <label for="kelas">Kelas:</label>
+            <input type="text" id="kelas" name="kelas" required>
+            
+            <label for="tgl_absen">Tanggal Izin:</label>
+            <input type="date" id="tgl_absen" name="tgl_absen" required>
+            
+            <label for="jenis_izin">Jenis Izin:</label>
+            <select id="jenis_izin" name="jenis_izin" required>
+                <option value="Hadir">Hadir</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Izin">Izin</option>
+                <option value="Alfa">Alfa</option>
+            </select>
+            
+            <label for="alasan">Alasan:</label>
+            <textarea id="alasan" name="alasan"></textarea>
+            
+            <button type="submit">Simpan</button>
+        </form>
+    </div>
+
+    <!-- JavaScript untuk notifikasi dan reset form -->
+    <script>
+        document.getElementById('absensiForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah submit default
+
+            var formData = new FormData(this);
+
+            fetch('input_absensi.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('notification').textContent = data.message;
+                    document.getElementById('notification').style.display = 'block';
+                    
+                    // Reset form setelah 2 detik
+                    setTimeout(function() {
+                        document.getElementById('absensiForm').reset();
+                        document.getElementById('notification').style.display = 'none';
+                    }, 2000);
+                } else {
+                    console.error('Error:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
